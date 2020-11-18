@@ -51,4 +51,3 @@ CREATE TABLE `staff` (
     `staff_id` int (11) NOT NULL AUTO_INCREMENT,
     `staff_name` varchar(100) NOT NULL,
     PRIMARY KEY (`staff_id`)) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
