@@ -1,0 +1,49 @@
+{% block body %}
+    <h1>Reservations</h1>
+
+    <h2>Open spots</h2>
+    <table border = 1>
+        <tr>
+            <th>Lot number</th>
+            <th>Spot number</th>
+            <th>Building name</th>
+        </tr>
+        {% for n in result %}
+        <tr>
+            <td> {{ n[0] }} </td>
+            <td> {{ n[1] }} </td>
+            <td> {{ n[2] }} </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <h2>My Reservations</h2>
+    <table border = 1>
+        <tr>
+            <th>Reservation ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Building Name</th>
+            <th>Spot number</th>
+            <th>Lot number</th>
+        </tr>
+    {% for n in reservations %}
+        <tr>
+            <td> {{ n[0] }} </td>
+            <td> {{ n[3] }} </td>
+            <td> {{ n[4] }} </td>
+            <td> {{ n[5] }} </td>
+            <td> {{ n[6] }} </td>
+            <td> {{ n[7] }} </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <h2>Create Reservations</h2>
+    <form>
+        <label for="building">Choose a building:</label>
+        <select id="building" name="building">
+            {% for n in availbuildings %}
+                <option value={{n[0]}}>{{n[0]}}</option>
+            {% endfor %}
+        </select>
+    </form>
+{% endblock %}
