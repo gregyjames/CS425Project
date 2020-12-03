@@ -64,7 +64,7 @@ def index():
             return redirect(url_for('admin', id=username))
          else:
             flash('User not found!') 
-      else:
+      if usertype == "unregistered":
          #mycursor.execute("SELECT * FROM non_member")
          #myresult = mycursor.fetchall()
          #found = False
