@@ -110,6 +110,10 @@ def delete():
          print("DELETED FROM CALENDAR!")
    return render_template("delete.html")
 
+@app.route('/registration', methods = ['POST', 'GET'])
+def registration():
+   return ""
+
 @app.route('/success/<typex>/<id>', methods = ['POST', 'GET'])
 def success(id, typex):
    query = "SELECT * FROM reservation WHERE member_id = " + str(id)
