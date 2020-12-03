@@ -1,11 +1,10 @@
 import os
 import mysql.connector
-from .models import Member
-from .app import app, db, encrypt_pwd
+from models import Member
+from app import app, db, encrypt_pwd
 from flask import flash, abort, redirect, url_for, request, render_template
 
 # app = Flask(__name__)
-
 
 mydb = mysql.connector.connect(
     host="localhost", user="greg", password="password", database="cs425test", auth_plugin='mysql_native_password'
@@ -159,44 +158,49 @@ def success(id, typex):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "GET":
-        return render_template("registration.html")
+   if request.method == "GET":
+      return render_template("registration.html")
 
-    if request.method == "POST":
-        # get form data
-        email = request.form["email"]
-        carplate = request.form["carplate"]
-        firstname = request.form["firstname"]
-        lastname = request.form["lastname"]
-        password = request.form["psw"]
-        password_repeat = request.form["psw-repeat"]
+   if request.method == "POST":
+      # get form data
+      email = request.form["email"]
+      carplate = request.form["carplate"]
+      firstname = request.form["firstname"]
+      lastname = request.form["lastname"]
+      password = request.form["psw"]
+      password_repeat = request.form["psw-repeat"]
 
-        if password != password_repeat:
-            # TODO - use javascript in html
-            abort(400, description="Password Confirmation Failed")
+      if password != password_repeat:
+         # TODO - use javascript in html
+         abort(400, description="Password Confirmation Failed")
 
-        password = encrypt_pwd(password)
+      password = encrypt_pwd(password)
 
-        # check if user exist
-        exists = Member.query.filter_by(email=email).first()
+      # check if user exist
+      exists = Member.query.filter_by(email=email).first()
 
-        if exists is not None:
-            abort(404, description="This email has already registered")
+      if exists is not None:
+         abort(404, description="This email has already registered")
 
-        member = Member(
-            carplate=carplate,
-            lastname=lastname,
-            firstname=firstname,
-            email=email,
-            password=password,
-        )
+      member = Member(
+         carplate=carplate,
+         lastname=lastname,
+         firstname=firstname,
+         email=email,
+         password=password,
+      )
 
-        db.session.add(member)
-        db.session.commit()
-        return render_template("thank_you.html", reason="Registering!")
+      db.session.add(member)
+      db.session.commit()
+
+      sql = "INSERT INTO members (car_plate_no, temp_plate_no, member_id, full_name, fee_paid) VALUES (%s, %s,%s, %s,%s)"
+      val = (carplate, None, None, firstname + " " + lastname, 85)
+      mycursor.execute(sql, val)
+
+      return render_template("thank_you.html", reason="Registering!")
 
       
- def generate_login_report():
+def generate_login_report():
    member_sql = """
    select distinct member_id, login_time, logout_time
    from login
@@ -216,6 +220,7 @@ def register():
 
    guest_login = mycursor.execute(non_member_sql)
    guest_login = mycursor.fetchall()
+   return user_login, guest_login
 
 if __name__ == '__main__':
 #    app.secret_key = os.urandom(24)
