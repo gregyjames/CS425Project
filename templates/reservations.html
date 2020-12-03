@@ -38,12 +38,27 @@
     {% endfor %}
     </table>
     <h2>Create Reservations</h2>
-    <form>
+    <form action={{url_for('success', id=1, typex="registered")}} method="post">
         <label for="building">Choose a building:</label>
         <select id="building" name="building">
             {% for n in availbuildings %}
                 <option value={{n[0]}}>{{n[0]}}</option>
             {% endfor %}
         </select>
+    </br>
+        <label for="date">Choose a date YYYY-MM-DD:</label>
+        <input type="text" id="date" name="date">
+    </br>
+        <label for="time">Choose a time HH:MM:SS:</label>
+        <input type="text" id="time" name="time">
+    </br>
+        <label for="spot">Choose a Spot number:</label>
+        <input type="text" id="spot" name="spot">
+    </br>
+        <label for="lot">Choose a Lot number:</label>
+        <input type="text" id="lot" name="lot">
+    </br>
+        <input type = "submit" value = "submit" /></p>
     </form>
+    <a href={{url_for('delete')}}>Delete a registration</a>
 {% endblock %}
