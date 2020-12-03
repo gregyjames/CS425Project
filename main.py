@@ -8,13 +8,17 @@ from flask import flash, abort, redirect, url_for, request, render_template
 
 
 mydb = mysql.connector.connect(
-    host="localhost", user="greg", password="password", database="cs425test", auth_plugin='mysql_native_password'
+    host="localhost",
+    user="greg",
+    password="password",
+    database="cs425test",
+    auth_plugin="mysql_native_password",
 )
 
 mycursor = mydb.cursor()
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route("/", methods=["POST", "GET"])
 def index():
     if request.method == "POST":
         req = request.form
@@ -35,9 +39,9 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for('success', id=username, typex=usertype))
+                return redirect(url_for("success", id=username, typex=usertype))
             else:
-                flash('User not found!')
+                flash("User not found!")
         if usertype == "staff":
             mycursor.execute("SELECT * FROM staff")
             myresult = mycursor.fetchall()
@@ -48,9 +52,9 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for('success', id=username, typex=usertype))
+                return redirect(url_for("success", id=username, typex=usertype))
             else:
-                flash('User not found!')
+                flash("User not found!")
         if usertype == "admin":
             mycursor.execute("SELECT * FROM administrator")
             myresult = mycursor.fetchall()
@@ -61,9 +65,9 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for('admin', id=username))
+                return redirect(url_for("admin", id=username))
             else:
-                flash('User not found!')
+                flash("User not found!")
         else:
             mycursor.execute("SELECT * FROM non_member")
             myresult = mycursor.fetchall()
@@ -74,53 +78,64 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for('success', id=username, typex=usertype))
+                return redirect(url_for("success", id=username, typex=usertype))
             else:
-                flash('User not found!')
+                flash("User not found!")
 
     return render_template("login.html")
 
 
-@app.route('/admin/<id>', methods=['POST', 'GET'])
+@app.route("/admin/<id>", methods=["POST", "GET"])
 def admin(id):
     user_login, guest_login = generate_login_report()
     return render_template("admin.html", user_login=user_login, guest_login=guest_login)
 
 
-@app.route('/delete/', methods=['POST', 'GET'])
+@app.route("/delete/", methods=["POST", "GET"])
 def delete():
     if request.method == "POST":
         req = request.form
         rid = req.get("rid")
-        sql = "SELECT * FROM reservation WHERE reservation_id =" + "'" + rid+"'"
+        sql = "SELECT * FROM reservation WHERE reservation_id =" + "'" + rid + "'"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         if len(myresult) > 0:
-            sql = "DELETE FROM `cs425test`.`reservation` `reservation` WHERE (`reservation`.`reservation_id` = " + rid + ")"
+            sql = (
+                "DELETE FROM `cs425test`.`reservation` `reservation` WHERE (`reservation`.`reservation_id` = "
+                + rid
+                + ")"
+            )
             mycursor.execute(sql)
             mydb.commit()
             print(str(myresult[0][3]))
             print(str(myresult[0][4]))
-            sql = "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '" + str(
-                myresult[0][3]) + "') AND (`calendar`.`reservation_time` = '" + str(myresult[0][4]) + "')"
+            sql = (
+                "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '"
+                + str(myresult[0][3])
+                + "') AND (`calendar`.`reservation_time` = '"
+                + str(myresult[0][4])
+                + "')"
+            )
             mycursor.execute(sql)
             mydb.commit()
             print("DELETED FROM CALENDAR!")
     return render_template("delete.html")
 
 
-@app.route('/registration', methods=['POST', 'GET'])
+@app.route("/registration", methods=["POST", "GET"])
 def registration():
     return ""
 
 
-@app.route('/success/<typex>/<id>', methods=['POST', 'GET'])
+@app.route("/success/<typex>/<id>", methods=["POST", "GET"])
 def success(id, typex):
     query = "SELECT * FROM reservation WHERE member_id = " + str(id)
     mycursor.execute(query)
     myreservations = mycursor.fetchall()
     # Open spots
-    mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
+    mycursor.execute(
+        "SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC"
+    )
     openspots = mycursor.fetchall()
     # Building names
     mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
@@ -145,10 +160,17 @@ def success(id, typex):
                 mydb.commit()
                 print("INSERTED RESERVATION!")
             except:
-                flash('Error making reservation!')
+                flash("Error making reservation!")
         else:
             print("")
-    return render_template("reservations.html", result=openspots, reservations=myreservations, availbuildings=buildings, uid=id, utype=typex)
+    return render_template(
+        "reservations.html",
+        result=openspots,
+        reservations=myreservations,
+        availbuildings=buildings,
+        uid=id,
+        utype=typex,
+    )
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -166,7 +188,7 @@ def register():
         password_repeat = request.form["psw-repeat"]
 
         if password != password_repeat:
-                # TODO - use javascript in html
+            # TODO - use javascript in html
             abort(400, description="Password Confirmation Failed")
 
         password = encrypt_pwd(password)
@@ -212,6 +234,6 @@ def generate_login_report():
     guest_login = mycursor.fetchall()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     #    app.secret_key = os.urandom(24)
     app.run(debug=True)
