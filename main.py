@@ -6,16 +6,14 @@ from flask import flash, abort, redirect, url_for, request, render_template
 
 # app = Flask(__name__)
 
-try:
-    mydb = mysql.connector.connect(
-        host="localhost", user="greg", password="password", database="cs425test"
-    )
 
-    mycursor = mydb.cursor()
-except:
-    pass
+mydb = mysql.connector.connect(
+    host="localhost", user="greg", password="password", database="cs425test", auth_plugin='mysql_native_password'
+)
 
+mycursor = mydb.cursor()
 
+print("running")
 @app.route("/", methods=["POST", "GET"])
 def index():
     if request.method == "POST":
@@ -162,7 +160,7 @@ def generate_login_report():
    member_sql = """
    select distinct member_id, login_time, logout_time
    from login
-   where member_id <> null
+   where member_id is not null
    order by login_time desc
    """
 
@@ -170,9 +168,9 @@ def generate_login_report():
    user_login = mycursor.fetchall()
 
    non_member_sql = """
-   select distinct member_id, login_time, logout_time
+   select distinct non_member_id, login_time, logout_time
    from login
-   where non_member_id <> null
+   where non_member_id is not null
    order by login_time desc
    """
 

@@ -60,9 +60,10 @@ CREATE TABLE `staff` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `login` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11),
   `non_member_id` int(11),
   `login_time` DATETIME NOT NULL,
   `logout_time` DATETIME NOT NULL,
-  PRIMARY KEY (`member_id`, `non_member_id`, `login_time`, `logout_time`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
