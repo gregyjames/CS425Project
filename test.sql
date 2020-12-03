@@ -58,3 +58,11 @@ CREATE TABLE `staff` (
   `staff_name` varchar(100) NOT NULL,
   PRIMARY KEY (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `login` (
+  `member_id` int(11),
+  `non_member_id` int(11),
+  `login_time` DATETIME NOT NULL,
+  `logout_time` DATETIME NOT NULL,
+  PRIMARY KEY (`member_id`, `non_member_id`, `login_time`, `logout_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
