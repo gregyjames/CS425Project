@@ -1,7 +1,8 @@
 import os
 import pathlib
-from flask import Flask
+
 from cryptography.fernet import Fernet
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 here = pathlib.Path(__file__)

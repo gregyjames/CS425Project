@@ -1,8 +1,10 @@
 import os
+
 import mysql.connector
-from .models import Member
+from flask import abort, flash, redirect, render_template, request, url_for
+
 from .app import app, db, encrypt_pwd
-from flask import flash, abort, redirect, url_for, request, render_template
+from .models import Member
 
 # app = Flask(__name__)
 
