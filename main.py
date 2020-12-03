@@ -90,6 +90,26 @@ def index():
 def admin(id):
    return render_template("admin.html")
 
+@app.route('/delete/', methods = ['POST', 'GET'])
+def delete():
+   if request.method == "POST":
+      req = request.form
+      rid = req.get("rid")
+      sql = "SELECT * FROM reservation WHERE reservation_id =" + "'" + rid+"'"
+      mycursor.execute(sql)
+      myresult = mycursor.fetchall()
+      if len(myresult) > 0:
+         sql = "DELETE FROM `cs425test`.`reservation` `reservation` WHERE (`reservation`.`reservation_id` = " + rid +")"
+         mycursor.execute(sql)
+         mydb.commit()
+         print(str(myresult[0][3]))
+         print(str(myresult[0][4]))
+         sql = "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '" + str(myresult[0][3]) + "') AND (`calendar`.`reservation_time` = '" + str(myresult[0][4]) + "')"
+         mycursor.execute(sql)
+         mydb.commit()
+         print("DELETED FROM CALENDAR!")
+   return render_template("delete.html")
+
 @app.route('/success/<typex>/<id>', methods = ['POST', 'GET'])
 def success(id, typex):
    query = "SELECT * FROM reservation WHERE member_id = " + str(id)
@@ -103,10 +123,28 @@ def success(id, typex):
    buildings = mycursor.fetchall()
    if request.method == "POST":
       if typex == "registered":
-         print("")
+         try:
+            req = request.form
+            rdate = req.get("date")
+            rtime = req.get("time")
+            rlot = req.get("lot")
+            rspot = req.get("spot")
+            rbuilding = req.get("building")
+            sql = "INSERT INTO calendar (reservation_date, reservation_time) VALUES (%s, %s)"
+            val = (rdate, rtime)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            print("Record inserted into Calander!")
+            sql = "INSERT INTO reservation (reservation_id, member_id, non_member_id, reservation_date, reservation_time, building_name, spot_no, lot_no) VALUES (%s, %s,%s, %s,%s, %s,%s, %s)"
+            val = (None, id, None, rdate, rtime,rbuilding, rspot, rlot)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            print("INSERTED RESERVATION!")
+         except:
+            flash('Error making reservation!')
       else:
          print("")
-   return render_template("reservations.html", result=openspots, reservations=myreservations, availbuildings=buildings)
+   return render_template("reservations.html", result=openspots, reservations=myreservations, availbuildings=buildings, uid=id, utype=typex)
 
 if __name__ == '__main__':
    app.secret_key = os.urandom(24)
