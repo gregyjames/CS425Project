@@ -114,6 +114,10 @@ def delete():
 def registration():
    return ""
 
+@app.route('/staff', methods = ['POST', 'GET'])
+def staff():
+   return ""
+
 @app.route('/nonmember', methods=['POST', 'GET'])
 def nonmember():
    #Open spots
