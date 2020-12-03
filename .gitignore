@@ -27,3 +27,4 @@ env/Lib/site-packages/__pycache__/
 env/Scripts/
 
 env/
+__pycache__/main.cpython-37.pyc
