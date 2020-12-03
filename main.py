@@ -15,7 +15,6 @@ from .models import Member
 
 # app = Flask(__name__)
 
-
 mydb = mysql.connector.connect(
     host="localhost",
     user="greg",
@@ -55,7 +54,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
         if usertype == "staff":
@@ -68,7 +68,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
         if usertype == "admin":
@@ -94,7 +95,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
 
@@ -104,7 +106,9 @@ def index():
 @app.route("/admin/<id>", methods=["POST", "GET"])
 def admin(id):
     user_login, guest_login = generate_login_report()
-    return render_template("admin.html", user_login=user_login, guest_login=guest_login)
+    return render_template("admin.html",
+                           user_login=user_login,
+                           guest_login=guest_login)
 
 
 @app.route("/success/<typex>/<id>", methods=["POST", "GET"])
