@@ -26,18 +26,14 @@ class Administrator(db.Model):
 # class Calendar(db.Model):
 #     pass
 
-
 # class Guest(db.Model):
 #     pass
-
 
 # class ParkingSpot(db.Model):
 #     pass
 
-
 # class Reservation(db.Model):
 #     pass
-
 
 # class Staff(db.Model):
 #     pass

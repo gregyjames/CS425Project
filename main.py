@@ -15,7 +15,6 @@ from .models import Member
 
 # app = Flask(__name__)
 
-
 mydb = mysql.connector.connect(
     host="localhost",
     user="greg",
@@ -48,7 +47,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
         if usertype == "staff":
@@ -61,7 +61,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
         if usertype == "admin":
@@ -87,7 +88,8 @@ def index():
                     found = True
 
             if found == True:
-                return redirect(url_for("success", id=username, typex=usertype))
+                return redirect(url_for("success", id=username,
+                                        typex=usertype))
             else:
                 flash("User not found!")
 
@@ -97,7 +99,9 @@ def index():
 @app.route("/admin/<id>", methods=["POST", "GET"])
 def admin(id):
     user_login, guest_login = generate_login_report()
-    return render_template("admin.html", user_login=user_login, guest_login=guest_login)
+    return render_template("admin.html",
+                           user_login=user_login,
+                           guest_login=guest_login)
 
 
 @app.route("/delete/", methods=["POST", "GET"])
@@ -111,20 +115,16 @@ def delete():
         if len(myresult) > 0:
             sql = (
                 "DELETE FROM `cs425test`.`reservation` `reservation` WHERE (`reservation`.`reservation_id` = "
-                + rid
-                + ")"
-            )
+                + rid + ")")
             mycursor.execute(sql)
             mydb.commit()
             print(str(myresult[0][3]))
             print(str(myresult[0][4]))
             sql = (
                 "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '"
-                + str(myresult[0][3])
-                + "') AND (`calendar`.`reservation_time` = '"
-                + str(myresult[0][4])
-                + "')"
-            )
+                + str(myresult[0][3]) +
+                "') AND (`calendar`.`reservation_time` = '" +
+                str(myresult[0][4]) + "')")
             mycursor.execute(sql)
             mydb.commit()
             print("DELETED FROM CALENDAR!")
