@@ -28,7 +28,7 @@ def index():
         # if unregistered go to register
         # TODO have another view for "Continue As Guest"
         if usertype == "unregistered":
-           return redirect(url_for("register"))
+            return redirect(url_for("register"))
 
         if usertype == "registered":
             mycursor.execute("SELECT * FROM members")
@@ -88,8 +88,8 @@ def index():
 
 @app.route("/admin/<id>", methods=["POST", "GET"])
 def admin(id):
-   user_login, guest_login = generate_login_report()
-   return render_template("admin.html", user_login=user_login, guest_login=guest_login)
+    user_login, guest_login = generate_login_report()
+    return render_template("admin.html", user_login=user_login, guest_login=guest_login)
 
 
 @app.route("/success/<typex>/<id>", methods=["POST", "GET"])
@@ -155,29 +155,30 @@ def register():
         db.session.add(member)
         db.session.commit()
         return render_template("thank_you.html", reason="Registering!")
-   
+
+
 def generate_login_report():
-   member_sql = """
+    member_sql = """
    select distinct member_id, login_time, logout_time
    from login
    where member_id is not null
    order by login_time desc
    """
 
-   user_login = mycursor.execute(member_sql)
-   user_login = mycursor.fetchall()
+    user_login = mycursor.execute(member_sql)
+    user_login = mycursor.fetchall()
 
-   non_member_sql = """
+    non_member_sql = """
    select distinct non_member_id, login_time, logout_time
    from login
    where non_member_id is not null
    order by login_time desc
    """
 
-   guest_login = mycursor.execute(non_member_sql)
-   guest_login = mycursor.fetchall()
+    guest_login = mycursor.execute(non_member_sql)
+    guest_login = mycursor.fetchall()
 
-   return user_login, guest_login
+    return user_login, guest_login
 
 
 if __name__ == "__main__":
