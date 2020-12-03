@@ -53,7 +53,7 @@ def index():
                found = True   
          
          if found == True:
-            return redirect(url_for('success', id=username, typex=usertype))
+            return redirect(url_for('staff'))
          else:
             flash('User not found!')
       if usertype == "admin":
@@ -70,18 +70,18 @@ def index():
          else:
             flash('User not found!') 
       else:
-         mycursor.execute("SELECT * FROM non_member")
-         myresult = mycursor.fetchall()
-         found = False
+         #mycursor.execute("SELECT * FROM non_member")
+         #myresult = mycursor.fetchall()
+         #found = False
 
-         for x in myresult:
-            if x[0] == int(username):
-               found = True   
+         #for x in myresult:
+         #   if x[0] == int(username):
+         #      found = True   
          
-         if found == True:
-            return redirect(url_for('success', id=username, typex=usertype))
-         else:
-            flash('User not found!')
+         #if found == True:
+         return redirect(url_for('nonmember'))
+         #else:
+         #   flash('User not found!')
          
    
    return render_template("login.html")
@@ -113,6 +113,17 @@ def delete():
 @app.route('/registration', methods = ['POST', 'GET'])
 def registration():
    return ""
+
+@app.route('/nonmember', methods=['POST', 'GET'])
+def nonmember():
+   #Open spots
+   mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
+   openspots = mycursor.fetchall()
+   #Building names
+   mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
+   buildings = mycursor.fetchall()
+   
+   return render_template("nonmember.html", result=openspots, availbuildings=buildings)
 
 @app.route('/success/<typex>/<id>', methods = ['POST', 'GET'])
 def success(id, typex):
@@ -149,6 +160,7 @@ def success(id, typex):
       else:
          print("")
    return render_template("reservations.html", result=openspots, reservations=myreservations, availbuildings=buildings, uid=id, utype=typex)
+
 
 if __name__ == '__main__':
    app.secret_key = os.urandom(24)
