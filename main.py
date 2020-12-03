@@ -8,12 +8,18 @@ from flask import flash, abort, redirect, url_for, request, render_template
 
 
 mydb = mysql.connector.connect(
-    host="localhost", user="greg", password="password", database="cs425test", auth_plugin='mysql_native_password'
+    host="localhost",
+    user="greg",
+    password="password",
+    database="cs425test",
+    auth_plugin="mysql_native_password",
 )
 
 mycursor = mydb.cursor()
 
 print("running")
+
+
 @app.route("/", methods=["POST", "GET"])
 def index():
     if request.method == "POST":
