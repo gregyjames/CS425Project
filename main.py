@@ -34,6 +34,11 @@ def getFee(building_name):
    myresult = mycursor.fetchall()
    return int(myresult[0][0])
 
+def deleteOldReservations():
+   sql = "DELETE FROM `cs425test`.`reservation` `reservation` WHERE (`reservation`.`reservation_date` < CURDATE())"
+   mycursor.execute(sql)
+   mydb.commit()
+
 def buildMonthlyReport(building_name, member):
    building = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0}
    fee = getFee(building_name)
@@ -52,7 +57,7 @@ def buildMonthlyReport(building_name, member):
    return building
 @app.route('/', methods = ['POST', 'GET'])
 def index():
-   #print()
+   deleteOldReservations()
    if request.method == "POST":
       req = request.form
 
@@ -126,6 +131,7 @@ def index():
 
 @app.route('/admin/<id>', methods = ['POST', 'GET'])
 def admin(id):
+   deleteOldReservations()
    query = "SELECT `members`.* FROM `cs425test`.`members` `members`"
    mycursor.execute(query)
    users = mycursor.fetchall()
@@ -215,6 +221,7 @@ def delete():
 
 @app.route('/staff/<id>', methods = ['POST', 'GET'])
 def staff(id):
+   deleteOldReservations()
    query = "SELECT `members`.* FROM `cs425test`.`members` `members`"
    mycursor.execute(query)
    users = mycursor.fetchall()
@@ -298,6 +305,7 @@ def nonmember():
 
 @app.route('/nonmember_check/<id>', methods=['POST', 'GET'])
 def nonmember_check(id):
+   deleteOldReservations()
    query = "SELECT * FROM reservation WHERE non_member_id = " + str(id)
    mycursor.execute(query)
    myreservations = mycursor.fetchall()
@@ -308,6 +316,7 @@ def nonmember_check(id):
 
 @app.route('/success/<typex>/<id>', methods = ['POST', 'GET'])
 def success(id, typex):
+   deleteOldReservations()
    query = "SELECT * FROM reservation WHERE member_id = " + str(id)
    mycursor.execute(query)
    myreservations = mycursor.fetchall()
@@ -341,6 +350,7 @@ def success(id, typex):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+   deleteOldReservations()
    if request.method == "GET":
       return render_template("registration.html")
 
@@ -357,6 +367,7 @@ def register():
          # TODO - use javascript in html
          abort(400, description="Password Confirmation Failed")
 
+      password_plain = password
       password = encrypt_pwd(password)
 
       # check if user exist
@@ -376,8 +387,8 @@ def register():
       db.session.add(member)
       db.session.commit()
 
-      sql = "INSERT INTO members (car_plate_no, temp_plate_no, member_id, full_name, fee_paid, email) VALUES (%s,%s,%s,%s,%s,%s)"
-      val = (carplate, None, None, firstname + " " + lastname, 0, email)
+      sql = "INSERT INTO members (car_plate_no, temp_plate_no, member_id, full_name, fee_paid, email, password) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+      val = (carplate, None, None, firstname + " " + lastname, 0, email,password_plain)
       mycursor.execute(sql, val)
 
       return render_template("thank_you.html", reason="Registering!")
