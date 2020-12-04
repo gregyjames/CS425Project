@@ -19,6 +19,7 @@ def index():
       req = request.form
 
       username = req.get("nm")
+      password = req.get("pass")
       usertype = req.get("userType")
 
       print(username)
@@ -28,13 +29,15 @@ def index():
          mycursor.execute("SELECT * FROM members")
          myresult = mycursor.fetchall()
          found = False
+         id=0
 
          for x in myresult:
-            if x[2] == int(username):
-               found = True   
+            if x[5] == username and x[6] == password:
+               found = True 
+               id=x[2]  
          
          if found == True:
-            return redirect(url_for('success', id=username, typex=usertype))
+            return redirect(url_for('success', id=id, typex=usertype))
          else:
             flash('User not found!')
       if usertype == "staff":
@@ -117,7 +120,46 @@ def nonmember():
    #Building names
    mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
    buildings = mycursor.fetchall()
-   
+   #return render_template("thank_you.html", reason="Registering!")
+   if request.method == "POST":
+         try:
+            req = request.form
+            rdate = req.get("date")
+            name = req.get("name")
+            rtime = req.get("time")
+            rlot = req.get("lot")
+            rspot = req.get("spot")
+            rbuilding = req.get("building")
+
+            sql = "INSERT INTO calendar (reservation_date, reservation_time) VALUES (%s, %s)"
+            val = (rdate, rtime)
+            mycursor.execute(sql, val)
+            mydb.commit()
+
+            sql = "INSERT INTO calendar (reservation_date, reservation_time) VALUES (%s, %s)"
+            val = (rdate, rtime)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            print("Record inserted into Calander!")
+            sql = "INSERT INTO reservation (reservation_id, member_id, non_member_id, reservation_date, reservation_time, building_name, spot_no, lot_no) VALUES (%s, %s,%s, %s,%s, %s,%s, %s)"
+            val = (None, id, None, rdate, rtime,rbuilding, rspot, rlot)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            print("INSERTED RESERVATION!")
+         except:
+            flash('Error making reservation!')
+   else:
+      print("")
+   return render_template("nonmember.html", result=openspots, availbuildings=buildings)
+
+@app.route('/nonmember/<id>', methods=['POST', 'GET'])
+def nonmember_check(id):
+   #Open spots
+   mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
+   openspots = mycursor.fetchall()
+   #Building names
+   mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
+   buildings = mycursor.fetchall()
    return render_template("nonmember.html", result=openspots, availbuildings=buildings)
 
 @app.route('/success/<typex>/<id>', methods = ['POST', 'GET'])
@@ -193,8 +235,8 @@ def register():
       db.session.add(member)
       db.session.commit()
 
-      sql = "INSERT INTO members (car_plate_no, temp_plate_no, member_id, full_name, fee_paid) VALUES (%s, %s,%s, %s,%s)"
-      val = (carplate, None, None, firstname + " " + lastname, 85)
+      sql = "INSERT INTO members (car_plate_no, temp_plate_no, member_id, full_name, fee_paid, email) VALUES (%s,%s,%s,%s,%s,%s)"
+      val = (carplate, None, None, firstname + " " + lastname, 0, email)
       mycursor.execute(sql, val)
 
       return render_template("thank_you.html", reason="Registering!")
