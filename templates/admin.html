@@ -1,5 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
+<a href="{{url_for('index')}}">BACK TO LOGIN</a>
+<h1>Available Spots</h1>
+<h2>Sunday: {{ days[0]}}</h2>
+<h2>Monday: {{ days[1]}}</h2>
+<h2>Tuesday: {{ days[2]}}</h2>
+<h2>Wednesday: {{ days[3]}}</h2>
+<h2>Thursday: {{ days[4]}}</h2>
+<h2>Friday: {{ days[5]}}</h2>
+<h2>Saturday: {{ days[6]}}</h2>
+<br>
+<br>
 
 <h1>User Login</h1>
 <table border = 1>

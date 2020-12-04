@@ -1,0 +1,22 @@
+<a href="{{url_for('index')}}">BACK TO LOGIN</a>
+<h2>My Reservations</h2>
+    <table border = 1>
+        <tr>
+            <th>Reservation ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Building Name</th>
+            <th>Spot number</th>
+            <th>Lot number</th>
+        </tr>
+    {% for n in result %}
+        <tr>
+            <td> {{ n[0] }} </td>
+            <td> {{ n[3] }} </td>
+            <td> {{ n[4] }} </td>
+            <td> {{ n[5] }} </td>
+            <td> {{ n[6] }} </td>
+            <td> {{ n[7] }} </td>
+        </tr>
+    {% endfor %}
+    </table>
