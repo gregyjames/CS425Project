@@ -1,12 +1,59 @@
 {% extends "layout.html" %}
 {% block body %}
    <center>
+      <div id="modal" class="modal">
+ 
+         <div class="modal-background"></div>
+        
+         <div class="modal-content">
+        
+           <div class="box">
+        
+             <article class="media">
+        
+               <div class="media-left">
+        
+                 <figure class="image is-64x64">
+        
+                   <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image">
+        
+                 </figure>
+        
+               </div>
+        
+               <div class="media-content">
+        
+                 <div class="content">
+        
+                   <p>
+        
+                     <strong>Instructions</strong>
+        
+                     <br>
+        
+                     Click submit without a ID to create a registration. It will give you a registration ID, you can use this to check your registration status.
+        
+                   </p>
+        
+                 </div>
+        
+               </div>
+        
+             </article>
+        
+           </div>
+        
+         </div>
+        
+         <button class="modal-close is-large" aria-label="close"></button>
+        
+       </div>
       <h1 class="title is-1">Parking</h1>
       <form action = "http://localhost:5000/" method = "post">
          <p>Enter Username or ID:</p>
          <p><input type = "text" name = "nm" /></p>
          <p>Enter Password:</p>
-         <p><input type = "password" name = "pass" /></p>
+         <p><input type = "password" name="pass" id="pass"/></p>
             <input type="radio" id="registered" name="userType" value="registered">
             <label for="registered">Registered</label><br>
             <input type="radio" id="unregistered" name="userType" value="unregistered">
@@ -19,4 +66,25 @@
          <a href="{{url_for('register')}}">Register</a>
       </form>
    </center>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script type=text/javascript>
+         $( document ).ready(function() {
+            $('input[type=radio][name=userType]').change(function() {
+               if (this.value == 'unregistered') {
+                  $("#pass").attr("disabled", "disabled");
+                  $(".modal").addClass("is-active");
+               }
+               else{
+                  $("#pass").removeAttr("disabled");
+
+               }
+            });
+            $(".modal-close").click(function() {
+               $(".modal").removeClass("is-active");
+            });
+            $("#closebtn").click(function() {
+               $(".modal").removeClass("is-active");
+            });
+         });
+      </script>
 {% endblock %}

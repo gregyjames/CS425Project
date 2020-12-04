@@ -22,7 +22,7 @@ def checkforRegistration(date, time, building, spot, lot):
       return False
 
 def createRegistration(rid, mid, nid, rdate,rtime,rbuilding,rspot,rlot):
-   if checkforRegistration(rdate, rtime, building, rspot, rlot) == False:
+   if checkforRegistration(rdate, rtime, rbuilding, rspot, rlot) == False:
       sql = "INSERT INTO reservation (reservation_id, member_id, non_member_id, reservation_date, reservation_time, building_name, spot_no, lot_no) VALUES (%s, %s,%s, %s,%s, %s,%s, %s)"
       val = (rid, mid, nid, rdate,rtime,rbuilding,rspot,rlot)
       mycursor.execute(sql, val)
@@ -320,6 +320,7 @@ def success(id, typex):
    query = "SELECT * FROM reservation WHERE member_id = " + str(id)
    mycursor.execute(query)
    myreservations = mycursor.fetchall()
+   print(myreservations)
    #Open spots
    mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
    openspots = mycursor.fetchall()
