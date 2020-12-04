@@ -21,6 +21,13 @@ def checkforRegistration(date, time, building, spot, lot):
    else:
       return False
 
+def createRegistration(rid, mid, nid, rdate,rtime,rbuilding,rspot,rlot):
+   if checkforRegistration(rdate, rtime, building, rspot, rlot) == False:
+      sql = "INSERT INTO reservation (reservation_id, member_id, non_member_id, reservation_date, reservation_time, building_name, spot_no, lot_no) VALUES (%s, %s,%s, %s,%s, %s,%s, %s)"
+      val = (rid, mid, nid, rdate,rtime,rbuilding,rspot,rlot)
+      mycursor.execute(sql, val)
+      mydb.commit()
+
 def getFee(building_name):
    query = "SELECT DISTINCT `building`.`fee` FROM `cs425test`.`building` `building` WHERE (`building`.`building_name` = '" + str(building_name) + "')"
    mycursor.execute(query)
@@ -200,15 +207,48 @@ def delete():
          mydb.commit()
          print(str(myresult[0][3]))
          print(str(myresult[0][4]))
-         sql = "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '" + str(myresult[0][3]) + "') AND (`calendar`.`reservation_time` = '" + str(myresult[0][4]) + "')"
+         """ sql = "DELETE FROM `cs425test`.`calendar` `calendar` WHERE (`calendar`.`reservation_date` = '" + str(myresult[0][3]) + "') AND (`calendar`.`reservation_time` = '" + str(myresult[0][4]) + "')"
          mycursor.execute(sql)
-         mydb.commit()
+         mydb.commit() """
          print("DELETED FROM CALENDAR!")
    return render_template("delete.html")
 
 @app.route('/staff/<id>', methods = ['POST', 'GET'])
 def staff(id):
-   return render_template("staff.html")
+   query = "SELECT `members`.* FROM `cs425test`.`members` `members`"
+   mycursor.execute(query)
+   users = mycursor.fetchall()
+   #Open spots
+   mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
+   openspots = mycursor.fetchall()
+   #Building names
+   mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
+   buildings = mycursor.fetchall()
+
+   if request.method == "POST":
+      if request.form['submit_button'] == 'Update user':
+         # get form data
+         email = request.form["uemail"]
+         carplate = request.form["ulicense"]
+         name = request.form["uname"]
+         password = request.form["upass"]
+         uid = request.form["uid"]
+
+         mycursor.execute ("""
+            UPDATE members
+            SET car_plate_no=%s, full_name=%s, email=%s, password=%s
+            WHERE member_id=%s
+         """, (carplate, name, email, password, uid))
+         return render_template("staff.html", id=id, users=users,reservations=openspots, availbuildings=buildings)
+      if request.form['submit_button'] == 'Make reservation':
+         rbuilding = request.form["building"]
+         rdate = request.form["date"]
+         rtime = request.form["time"]
+         rspot = request.form["spot"]
+         rlot = request.form["lot"]
+         rid = request.form["uid"]
+         createRegistration(None, rid, None, rdate, rtime, rbuilding, rspot, rlot)
+   return render_template("staff.html", id=id, users=users,reservations=openspots, availbuildings=buildings)
 
 @app.route('/nonmember', methods=['POST', 'GET'])
 def nonmember():

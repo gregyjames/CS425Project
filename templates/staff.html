@@ -2,4 +2,78 @@
 {% block body %}
 <a href="{{url_for('index')}}">BACK TO LOGIN</a>
 <h2>Staff</h2>
+<h1 class="title is-1">Update user info</h1>
+<table border=1>
+    <tr>
+        <td>License</td>
+        <td>Member ID</td>
+        <td>Full name</td>
+        <td>Email</td>
+        <td>Password</td>
+    </tr>
+    {% for row in users %}
+        <tr>
+            <td>{{row[0]}}</td>
+            <td>{{row[2]}}</td>
+            <td>{{row[3]}}</td>
+            <td>{{row[5]}}</td>
+            <td>{{row[6]}}</td>
+        </tr>
+    {% endfor %}
+</table>
+<form method = "post">
+    <p>Enter ID:</p>
+    <p><input type = "text" name = "uid" /></p>
+    <p>Enter Password:</p>
+    <p><input type = "password" name = "upass" /></p>
+    <p>Enter Email:</p>
+    <p><input type = "text" name = "uemail" /></p>
+    <p>Enter License:</p>
+    <p><input type = "text" name = "ulicense" /></p>
+    <p>Enter Name:</p>
+    <p><input type = "text" name = "uname" /></p>
+    <input type = "submit" value = "submit" name="submit_button" value="Update user"/></p>
+ </form>
+ <h1 class="title is-1">Make reservation</h1>
+ <h2>Open spots</h2>
+ <table border = 1>
+     <tr>
+         <th>Lot number</th>
+         <th>Spot number</th>
+         <th>Building name</th>
+     </tr>
+     {% for n in reservations %}
+     <tr>
+         <td> {{ n[0] }} </td>
+         <td> {{ n[1] }} </td>
+         <td> {{ n[2] }} </td>
+     </tr>
+ {% endfor %}
+ </table>
+    <h2>Create Reservations</h2>
+    <form method="post">
+        <label for="building">Choose a building:</label>
+        <select id="building" name="building">
+            {% for n in availbuildings %}
+                <option value={{n[0]}}>{{n[0]}}</option>
+            {% endfor %}
+        </select>
+    </br>
+        <label for="date">Choose a date YYYY-MM-DD:</label>
+        <input type="text" id="date" name="date">
+    </br>
+        <label for="time">Choose a time HH:MM:SS:</label>
+        <input type="text" id="time" name="time">
+    </br>
+        <label for="spot">Choose a Spot number:</label>
+        <input type="text" id="spot" name="spot">
+    </br>
+        <label for="lot">Choose a Lot number:</label>
+        <input type="text" id="lot" name="lot">
+    </br>
+        <label for="lot">Choose ID:</label>
+        <input type="text" id="uid" name="uid">
+        </br>
+        <input type = "submit" value = "submit" name="submit_button" value="Make reservation"/></p>
+    </form>
 {% endblock %}
