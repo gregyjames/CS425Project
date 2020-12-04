@@ -21,8 +21,31 @@ def checkforRegistration(date, time, building, spot, lot):
    else:
       return False
 
+def getFee(building_name):
+   query = "SELECT DISTINCT `building`.`fee` FROM `cs425test`.`building` `building` WHERE (`building`.`building_name` = '" + str(building_name) + "')"
+   mycursor.execute(query)
+   myresult = mycursor.fetchall()
+   return int(myresult[0][0])
+
+def buildMonthlyReport(building_name, member):
+   building = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0}
+   fee = getFee(building_name)
+   for x in range(1,13):
+      if member == False:
+         query = "SELECT ALL `building`.`building_name`,`building`.`fee` FROM `cs425test`.`building` `building` RIGHT OUTER JOIN `cs425test`.`reservation` `reservation` ON `building`.`building_name` = `reservation`.`building_name` WHERE (MONTH(`reservation`.`reservation_date`) = '" + str(x) + "') AND (`reservation`.`building_name` = '" + building_name + "') AND (`reservation`.`member_id` IS NULL)"
+         mycursor.execute(query)
+         myresult = mycursor.fetchall()
+         building[x] = len(myresult) * fee
+      else:
+         query = "SELECT ALL `building`.`building_name`,`building`.`fee` FROM `cs425test`.`building` `building` RIGHT OUTER JOIN `cs425test`.`reservation` `reservation` ON `building`.`building_name` = `reservation`.`building_name` WHERE (MONTH(`reservation`.`reservation_date`) = '" + str(x) + "') AND (`reservation`.`building_name` = '" + building_name + "') AND (`reservation`.`non_member_id` IS NULL)"
+         mycursor.execute(query)
+         myresult = mycursor.fetchall()
+         building[x] = len(myresult) * fee
+
+   return building
 @app.route('/', methods = ['POST', 'GET'])
 def index():
+   #print()
    if request.method == "POST":
       req = request.form
 
@@ -109,6 +132,18 @@ def admin(id):
    mycursor.execute(query)
    myresult = mycursor.fetchall()
 
+   mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
+   buildings = mycursor.fetchall()
+
+   result = {}
+
+   for x in buildings:
+      name = str(x[0])
+      result[name] = {'r':{}, 'u':{}}
+      result[name]['r'] = buildMonthlyReport(str(x[0]), True)
+      result[name]['u'] = buildMonthlyReport(str(x[0]), False)
+      print(result)
+
    for x in myresult:
       if x[3] == 1:
          sunday = sunday - 1
@@ -127,7 +162,7 @@ def admin(id):
    
    
    user_login, guest_login = generate_login_report()
-   return render_template("admin.html", user_login=user_login, guest_login=guest_login, days=[sunday, monday,tuesday, wednesday, thursday, friday, saturday])
+   return render_template("admin.html", user_login=user_login, abuildings=result, guest_login=guest_login, days=[sunday, monday,tuesday, wednesday, thursday, friday, saturday])
 
 @app.route('/delete/', methods = ['POST', 'GET'])
 def delete():
@@ -150,7 +185,7 @@ def delete():
    return render_template("delete.html")
 
 @app.route('/staff', methods = ['POST', 'GET'])
-def staff():
+def staff(id):
    return ""
 
 @app.route('/nonmember', methods=['POST', 'GET'])

@@ -1,7 +1,48 @@
 {% extends "layout.html" %}
 {% block body %}
 <a href="{{url_for('index')}}">BACK TO LOGIN</a>
-<h1>Available Spots</h1>
+<h1 class="title is-1">Monthly Revenue</h1>
+{% for key, value in abuildings.items() %}
+    <h3 class="title is-3">{{key}}</h3>
+    <table>
+        <tr>
+            <td title is-3>Registered</td>
+            <td title is-3>Unregistered</td>
+        </tr>
+        <tr>
+            <td>
+                <table border = 1>
+                    <tr>
+                        <td>Month</td>
+                        <td>Income</td>
+                    </tr>
+                    {% for row,row2 in value['r'].items() %}
+                    <tr>
+                        <td>{{row}}</td>
+                        <td>${{row2}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td>
+                <table border = 1>
+                    <tr>
+                        <td>Month</td>
+                        <td>Income</td>
+                    </tr>
+                    {% for row,row2 in value['u'].items() %}
+                    <tr>
+                        <td>{{row}}</td>
+                        <td>${{row2}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+{% endfor %}
+
+<h1 class="title is-1">Weekly Available Spots</h1>
 <h2>Sunday: {{ days[0]}}</h2>
 <h2>Monday: {{ days[1]}}</h2>
 <h2>Tuesday: {{ days[2]}}</h2>
