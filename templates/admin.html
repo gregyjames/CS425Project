@@ -1,6 +1,39 @@
 {% extends "layout.html" %}
 {% block body %}
 <a href="{{url_for('index')}}">BACK TO LOGIN</a>
+
+<h1 class="title is-1">Update user info</h1>
+<table border=1>
+    <tr>
+        <td>License</td>
+        <td>Member ID</td>
+        <td>Full name</td>
+        <td>Email</td>
+        <td>Password</td>
+    </tr>
+    {% for row in ausers %}
+        <tr>
+            <td>{{row[0]}}</td>
+            <td>{{row[2]}}</td>
+            <td>{{row[3]}}</td>
+            <td>{{row[5]}}</td>
+            <td>{{row[6]}}</td>
+        </tr>
+    {% endfor %}
+</table>
+<form method = "post">
+    <p>Enter ID:</p>
+    <p><input type = "text" name = "uid" /></p>
+    <p>Enter Password:</p>
+    <p><input type = "password" name = "upass" /></p>
+    <p>Enter Email:</p>
+    <p><input type = "text" name = "uemail" /></p>
+    <p>Enter License:</p>
+    <p><input type = "text" name = "ulicense" /></p>
+    <p>Enter Name:</p>
+    <p><input type = "text" name = "uname" /></p>
+    <p><input type = "submit" value = "submit" /></p>
+ </form>
 <h1 class="title is-1">Monthly Revenue</h1>
 {% for key, value in abuildings.items() %}
     <h3 class="title is-3">{{key}}</h3>

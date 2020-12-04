@@ -75,26 +75,28 @@ def index():
          mycursor.execute("SELECT * FROM staff")
          myresult = mycursor.fetchall()
          found = False
+         uid = 1
 
          for x in myresult:
-            if x[0] == int(username):
+            if x[2] == username and x[3] == password:
                found = True   
-         
+               uid = x[0]
          if found == True:
-            return redirect(url_for('staff'))
+            return redirect(url_for('staff', id=uid))
          else:
             flash('User not found!')
       if usertype == "admin":
          mycursor.execute("SELECT * FROM administrator")
          myresult = mycursor.fetchall()
          found = False
-
+         uid = 1
          for x in myresult:
-            if x[0] == int(username):
-               found = True   
+            if x[3] == username and x[2] == password:
+               found = True 
+               uid = x[0]  
          
          if found == True:
-            return redirect(url_for('admin', id=username))
+            return redirect(url_for('admin', id=uid))
          else:
             flash('User not found!') 
       if usertype == "unregistered":
@@ -117,6 +119,26 @@ def index():
 
 @app.route('/admin/<id>', methods = ['POST', 'GET'])
 def admin(id):
+   query = "SELECT `members`.* FROM `cs425test`.`members` `members`"
+   mycursor.execute(query)
+   users = mycursor.fetchall()
+   
+   if request.method == "POST":
+      # get form data
+      email = request.form["uemail"]
+      carplate = request.form["ulicense"]
+      name = request.form["uname"]
+      password = request.form["upass"]
+      uid = request.form["uid"]
+
+      mycursor.execute ("""
+         UPDATE members
+         SET car_plate_no=%s, full_name=%s, email=%s, password=%s
+         WHERE member_id=%s
+      """, (carplate, name, email, password, uid))
+      return render_template("admin.html", id=id, abuildings={}, days={},)
+
+   print(users)
    query = "SELECT * FROM `cs425test`.`parking_spot` `parking_spot`"
    mycursor.execute(query)
    myresult = mycursor.fetchall()
@@ -162,7 +184,7 @@ def admin(id):
    
    
    user_login, guest_login = generate_login_report()
-   return render_template("admin.html", user_login=user_login, abuildings=result, guest_login=guest_login, days=[sunday, monday,tuesday, wednesday, thursday, friday, saturday])
+   return render_template("admin.html", user_login=user_login, abuildings=result, ausers=users,guest_login=guest_login, days=[sunday, monday,tuesday, wednesday, thursday, friday, saturday], uid=id)
 
 @app.route('/delete/', methods = ['POST', 'GET'])
 def delete():
@@ -184,9 +206,9 @@ def delete():
          print("DELETED FROM CALENDAR!")
    return render_template("delete.html")
 
-@app.route('/staff', methods = ['POST', 'GET'])
+@app.route('/staff/<id>', methods = ['POST', 'GET'])
 def staff(id):
-   return ""
+   return render_template("staff.html")
 
 @app.route('/nonmember', methods=['POST', 'GET'])
 def nonmember():
