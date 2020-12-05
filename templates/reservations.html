@@ -39,7 +39,7 @@
     {% endfor %}
     </table>
     <h2>Create Reservations</h2>
-    <form action={{url_for('success', id=1, typex="registered")}} method="post">
+    <form method="post">
         <label for="building">Choose a building:</label>
         <select id="building" name="building">
             {% for n in availbuildings %}

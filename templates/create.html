@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block body %}
+<a href="{{url_for('index')}}">BACK TO LOGIN</a>
+<h1 class="title is-1">Make reservation</h1>
+<h2>Open spots</h2>
+<table border = 1>
+    <tr>
+        <th>Lot number</th>
+        <th>Spot number</th>
+        <th>Building name</th>
+    </tr>
+    {% for n in reservations %}
+    <tr>
+        <td> {{ n[0] }} </td>
+        <td> {{ n[1] }} </td>
+        <td> {{ n[2] }} </td>
+    </tr>
+   {% endfor %}
+   </table>
+   <h2>Create Reservations</h2>
+    <form action="" method="POST">
+       <label for="building">Choose a building:</label>
+       <select id="building" name="building">
+           {% for n in availbuildings %}
+               <option value={{n[0]}}>{{n[0]}}</option>
+           {% endfor %}
+       </select>
+   </br>
+       <label for="date">Choose a date YYYY-MM-DD:</label>
+       <input type="text" id="date" name="date">
+   </br>
+       <label for="time">Choose a time HH:MM:SS:</label>
+       <input type="text" id="time" name="time">
+   </br>
+       <label for="spot">Choose a Spot number:</label>
+       <input type="text" id="spot" name="spot">
+   </br>
+       <label for="lot">Choose a Lot number:</label>
+       <input type="text" id="lot" name="lot">
+   </br>
+       <label for="lot">Choose ID:</label>
+       <input type="text" id="uid" name="uid">
+       </br>
+       <input type = "submit" value = "submit" name="action" value="Make"/></p>
+   </form>
+   {% endblock %}

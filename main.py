@@ -219,6 +219,28 @@ def delete():
          print("DELETED FROM CALENDAR!")
    return render_template("delete.html")
 
+@app.route('/create/', methods = ['POST', 'GET'])
+def create():
+   deleteOldReservations()
+   query = "SELECT `members`.* FROM `cs425test`.`members` `members`"
+   mycursor.execute(query)
+   users = mycursor.fetchall()
+   #Open spots
+   mycursor.execute("SELECT `parking_spot`.`lot_no`,`parking_spot`.`spot_no`,`parking_spot`.`building_name` FROM `cs425test`.`parking_spot` `parking_spot` LEFT OUTER JOIN `cs425test`.`reservation` `reservation` ON `parking_spot`.`lot_no` = `reservation`.`lot_no` AND `parking_spot`.`spot_no` = `reservation`.`spot_no` AND `parking_spot`.`building_name` = `reservation`.`building_name` WHERE (`reservation`.`reservation_id` IS NULL) ORDER BY `parking_spot`.`building_name` ASC, `parking_spot`.`lot_no` ASC")
+   openspots = mycursor.fetchall()
+   #Building names
+   mycursor.execute("SELECT DISTINCT building_name FROM parking_spot")
+   buildings = mycursor.fetchall()
+   if request.method == "POST":
+      rbuilding = request.form["building"]
+      rdate = request.form["date"]
+      rtime = request.form["time"]
+      rspot = request.form["spot"]
+      rlot = request.form["lot"]
+      rid = request.form["uid"]
+      createRegistration(None, int(rid), None, rdate, rtime, rbuilding, int(rspot), int(rlot))
+   return render_template("create.html", users=users,reservations=openspots, availbuildings=buildings)
+
 @app.route('/staff/<id>', methods = ['POST', 'GET'])
 def staff(id):
    deleteOldReservations()
@@ -233,28 +255,20 @@ def staff(id):
    buildings = mycursor.fetchall()
 
    if request.method == "POST":
-      if request.form['submit_button'] == 'Update user':
-         # get form data
-         email = request.form["uemail"]
-         carplate = request.form["ulicense"]
-         name = request.form["uname"]
-         password = request.form["upass"]
-         uid = request.form["uid"]
+      # get form data
+      email = request.form["uemail"]
+      carplate = request.form["ulicense"]
+      name = request.form["uname"]
+      password = request.form["upass"]
+      uid = request.form["uid"]
 
-         mycursor.execute ("""
-            UPDATE members
-            SET car_plate_no=%s, full_name=%s, email=%s, password=%s
-            WHERE member_id=%s
-         """, (carplate, name, email, password, uid))
-         return render_template("staff.html", id=id, users=users,reservations=openspots, availbuildings=buildings)
-      if request.form['submit_button'] == 'Make reservation':
-         rbuilding = request.form["building"]
-         rdate = request.form["date"]
-         rtime = request.form["time"]
-         rspot = request.form["spot"]
-         rlot = request.form["lot"]
-         rid = request.form["uid"]
-         createRegistration(None, rid, None, rdate, rtime, rbuilding, rspot, rlot)
+      mycursor.execute ("""
+         UPDATE members
+         SET car_plate_no=%s, full_name=%s, email=%s, password=%s
+         WHERE member_id=%s
+      """, (carplate, name, email, password, uid))
+      return render_template("staff.html", id=id, users=users,reservations=openspots, availbuildings=buildings)
+      
    return render_template("staff.html", id=id, users=users,reservations=openspots, availbuildings=buildings)
 
 @app.route('/nonmember', methods=['POST', 'GET'])
